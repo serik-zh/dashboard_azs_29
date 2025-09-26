@@ -462,6 +462,46 @@
             </div>
             <canvas id="pwauChart"></canvas>
         </div>
+
+        <h2 style="margin-top: 50px; margin-bottom: 20px; font-size: 24px; font-weight: 700; color: #1a1a1a;">⛽ Бесконтактная заправка (без Яндекс)</h2>
+        
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-info">
+                        <div class="chart-title">Помесячная динамика топлива (2025)</div>
+                        <div class="chart-subtitle">Количество литров по видам топлива</div>
+                    </div>
+                    <button class="export-btn" onclick="exportChart('fuelMonthlyChart', 'fuel-monthly.png')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        PNG
+                    </button>
+                </div>
+                <canvas id="fuelMonthlyChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-info">
+                        <div class="chart-title">Ежедневная динамика топлива (Сентябрь)</div>
+                        <div class="chart-subtitle">Количество литров по видам топлива</div>
+                    </div>
+                    <button class="export-btn" onclick="exportChart('fuelDailyChart', 'fuel-daily-sept.png')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        PNG
+                    </button>
+                </div>
+                <canvas id="fuelDailyChart"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -725,6 +765,172 @@
                         },
                         grid: {
                             display: false,
+                            drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Fuel Monthly Chart
+        const fuelMonthlyCtx = document.getElementById('fuelMonthlyChart').getContext('2d');
+        const fuelMonthlyLabels = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август'];
+        const fuelMonthlyAI92 = [81736.04, 66767.71, 53989.28, 52436.34, 52594.07, 48575.09, 48806.56, 40062.77];
+        const fuelMonthlyAI95 = [39504.04, 36030.01, 32097.66, 35111.43, 35181.61, 37425.33, 41717.31, 36153.56];
+        const fuelMonthlyAI98_100 = [3527.27, 2611.38, 3285.44, 2640.51, 2558.34, 2868.85, 4194.35, 2238.91];
+
+        new Chart(fuelMonthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: fuelMonthlyLabels,
+                datasets: [
+                    {
+                        label: 'АИ-92',
+                        data: fuelMonthlyAI92,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'АИ-95',
+                        data: fuelMonthlyAI95,
+                        backgroundColor: '#10b981',
+                        borderRadius: 4
+                    },
+                    {
+                        label: 'АИ-98/100',
+                        data: fuelMonthlyAI98_100,
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            padding: 15,
+                            font: { size: 13 },
+                            usePointStyle: true,
+                            pointStyle: 'rect'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toLocaleString('ru-RU', {maximumFractionDigits: 0}) + ' л';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#6b7280'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return (value / 1000).toFixed(0) + 'k л';
+                            },
+                            font: { size: 11 },
+                            color: '#6b7280'
+                        },
+                        grid: {
+                            color: '#e5e7eb',
+                            drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Fuel Daily Chart
+        const fuelDailyCtx = document.getElementById('fuelDailyChart').getContext('2d');
+        const fuelDailyLabels = ['01.09', '02.09', '03.09', '04.09', '05.09', '06.09', '07.09', '08.09', '09.09', '10.09', '11.09', '12.09', '13.09', '14.09', '15.09', '16.09', '17.09', '18.09', '19.09', '20.09', '21.09', '22.09', '23.09'];
+        const fuelDailyAI92 = [1136.84, 1372.38, 1214.31, 1036.13, 942.52, 1008.21, 1227.71, 1038.95, 973.88, 1771.56, 1005.66, 1151.26, 960.4, 1506.5, 1381.1, 919.9, 1074.05, 940.57, 1222.85, 1208.93, 480.47, 1062.8, 983.23];
+        const fuelDailyAI95 = [1173, 1373.91, 1114.72, 1527.35, 1106.55, 1217.96, 936.84, 871.36, 827.24, 1073.89, 1134.87, 1135.11, 1343.43, 1103.77, 829.08, 861.15, 1124.78, 1081.76, 1160.23, 819.38, 447.74, 942.71, 628.81];
+        const fuelDailyAI98_100 = [197.46, 237.5, 32.15, 188.92, 50, 98.73, 103.69, 149.49, 43.05, 47.77, 65, 77.77, 157.6, 191.43, 60, 29.53, 113.77, 92.11, 148.49, 263.31, 90.46, 63.44, 23.77];
+
+        new Chart(fuelDailyCtx, {
+            type: 'bar',
+            data: {
+                labels: fuelDailyLabels,
+                datasets: [
+                    {
+                        label: 'АИ-92',
+                        data: fuelDailyAI92,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 3
+                    },
+                    {
+                        label: 'АИ-95',
+                        data: fuelDailyAI95,
+                        backgroundColor: '#10b981',
+                        borderRadius: 3
+                    },
+                    {
+                        label: 'АИ-98/100',
+                        data: fuelDailyAI98_100,
+                        backgroundColor: '#f59e0b',
+                        borderRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'end',
+                        labels: {
+                            padding: 15,
+                            font: { size: 13 },
+                            usePointStyle: true,
+                            pointStyle: 'rect'
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': ' + context.parsed.y.toLocaleString('ru-RU', {maximumFractionDigits: 2}) + ' л';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { size: 10 },
+                            color: '#6b7280',
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toLocaleString('ru-RU') + ' л';
+                            },
+                            font: { size: 11 },
+                            color: '#6b7280'
+                        },
+                        grid: {
+                            color: '#e5e7eb',
                             drawBorder: false
                         }
                     }
