@@ -502,6 +502,82 @@
                 <canvas id="fuelDailyChart"></canvas>
             </div>
         </div>
+
+        <h2 style="margin-top: 50px; margin-bottom: 20px; font-size: 24px; font-weight: 700; color: #1a1a1a;">🏆 Топ-10 АЗС (Август 2025)</h2>
+        
+        <div class="charts-grid">
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-info">
+                        <div class="chart-title">Количество литров</div>
+                        <div class="chart-subtitle">Топ-10 АЗС по объему продаж</div>
+                    </div>
+                    <button class="export-btn" onclick="exportChart('litersChart', 'top10-liters.png')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        PNG
+                    </button>
+                </div>
+                <canvas id="litersChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-info">
+                        <div class="chart-title">Количество чеков</div>
+                        <div class="chart-subtitle">Топ-10 АЗС по числу транзакций</div>
+                    </div>
+                    <button class="export-btn" onclick="exportChart('checksChart', 'top10-checks.png')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        PNG
+                    </button>
+                </div>
+                <canvas id="checksChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-info">
+                        <div class="chart-title">Доля от общего объема</div>
+                        <div class="chart-subtitle">% от общего (обычная + БЗ, без ДТ)</div>
+                    </div>
+                    <button class="export-btn" onclick="exportChart('shareChart', 'top10-share.png')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        PNG
+                    </button>
+                </div>
+                <canvas id="shareChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-header">
+                    <div class="chart-info">
+                        <div class="chart-title">Средний пролив</div>
+                        <div class="chart-subtitle">Средний объем на чек (литры)</div>
+                    </div>
+                    <button class="export-btn" onclick="exportChart('avgFillChart', 'top10-avgfill.png')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        PNG
+                    </button>
+                </div>
+                <canvas id="avgFillChart"></canvas>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -932,6 +1008,186 @@
                         grid: {
                             color: '#e5e7eb',
                             drawBorder: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Топ-10 АЗС графики
+        const stationsLabels = ['Z313', 'Z015', 'Z001', 'Z045', '22', 'O105', 'Z033', 'Z047', 'Z046', 'U112'];
+        const stationsLiters = [815469, 579231, 569438, 544354, 531343, 518223, 508383, 473046, 444405, 412309];
+        const stationsChecks = [25489, 20101, 20123, 17696, 16420, 15615, 15150, 16073, 15232, 13895];
+        const stationsShares = [98.68, 99.53, 99.97, 99.93, 99.11, 99.97, 99.74, 99.42, 99.96, 99.80];
+        const stationsAvgFills = [32.04, 28.81, 28.30, 30.77, 32.41, 33.20, 33.56, 29.45, 29.18, 29.66];
+
+        // График литров АЗС
+        const litersCtx = document.getElementById('litersChart').getContext('2d');
+        new Chart(litersCtx, {
+            type: 'bar',
+            data: {
+                labels: stationsLabels,
+                datasets: [{
+                    data: stationsLiters,
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: (ctx) => ctx.parsed.y.toLocaleString('ru-RU') + ' л'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, color: '#6b7280' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e5e7eb', drawBorder: false },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#6b7280',
+                            callback: (value) => (value / 1000).toFixed(0) + 'k'
+                        }
+                    }
+                }
+            }
+        });
+
+        // График чеков АЗС
+        const checksChartCtx = document.getElementById('checksChart').getContext('2d');
+        new Chart(checksChartCtx, {
+            type: 'bar',
+            data: {
+                labels: stationsLabels,
+                datasets: [{
+                    data: stationsChecks,
+                    backgroundColor: '#10b981',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: (ctx) => ctx.parsed.y.toLocaleString('ru-RU') + ' чеков'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, color: '#6b7280' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e5e7eb', drawBorder: false },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#6b7280',
+                            callback: (value) => value.toLocaleString('ru-RU')
+                        }
+                    }
+                }
+            }
+        });
+
+        // График доли АЗС
+        const shareChartCtx = document.getElementById('shareChart').getContext('2d');
+        new Chart(shareChartCtx, {
+            type: 'bar',
+            data: {
+                labels: stationsLabels,
+                datasets: [{
+                    data: stationsShares,
+                    backgroundColor: '#f59e0b',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: (ctx) => ctx.parsed.y.toFixed(2) + '%'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, color: '#6b7280' }
+                    },
+                    y: {
+                        min: 98,
+                        max: 100,
+                        grid: { color: '#e5e7eb', drawBorder: false },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#6b7280',
+                            callback: (value) => value + '%'
+                        }
+                    }
+                }
+            }
+        });
+
+        // График среднего пролива АЗС
+        const avgFillChartCtx = document.getElementById('avgFillChart').getContext('2d');
+        new Chart(avgFillChartCtx, {
+            type: 'bar',
+            data: {
+                labels: stationsLabels,
+                datasets: [{
+                    data: stationsAvgFills,
+                    backgroundColor: '#8b5cf6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        padding: 12,
+                        callbacks: {
+                            label: (ctx) => ctx.parsed.y.toFixed(2) + ' л'
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 }, color: '#6b7280' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#e5e7eb', drawBorder: false },
+                        ticks: {
+                            font: { size: 11 },
+                            color: '#6b7280',
+                            callback: (value) => value.toFixed(0) + ' л'
                         }
                     }
                 }
